@@ -1,0 +1,556 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        烂笔头
+    </title>
+    <meta name="description" content="">
+    <link href="atom.xml" rel="alternate" title="烂笔头" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+
+</head>
+
+<body class="antialiased hide-extras"></body>
+
+<div class="inner-wrap">
+
+
+    <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+        <div id="header">
+            <h1><a href="index.html">烂笔头</a></h1>
+        </div>
+
+    </nav>
+
+
+    <div class="row">
+        <div class="sidebar">
+            <ul id="side-nav" class="side-nav">
+
+                
+                <li class="side-title"><span>Android</span></li>
+                
+                <li><a title="DialogFragment内存泄露问题能不能一次性改好" href="16251021954820.html">DialogFragment内存泄露问题能不能一次性改好</a></li>
+                
+                <li><a title="Android静默安装实现方案，仿360手机助手秒装和智能安装功能" href="16251021954779.html">Android静默安装实现方案，仿360手机助手秒装和智能安装功能</a></li>
+                
+                <li><a title="Android 添加水印功能" href="16251021954737.html">Android 添加水印功能</a></li>
+                
+                <li><a title="Android 监听手电筒状态" href="16251021954689.html">Android 监听手电筒状态</a></li>
+                 
+                <li class="side-title"><span>Github</span></li>
+                
+                <li><a title="使用Github+jsdelivr构建你的免费图床" href="16251022060206.html">使用Github+jsdelivr构建你的免费图床</a></li>
+                 
+                <li class="side-title"><span>Glide</span></li>
+                
+                <li><a title="Glide源码修改-自定义磁盘缓存实现永久存储" href="16251022251608.html">Glide源码修改-自定义磁盘缓存实现永久存储</a></li>
+                
+                <li><a title="Android—Glide使用教程（一）" href="16251022251568.html">Android—Glide使用教程（一）</a></li>
+                
+                <li><a title="Android—Glide使用教程（三）" href="16251022251527.html">Android—Glide使用教程（三）</a></li>
+                
+                <li><a title="Android—Glide使用教程（二）" href="16251022251484.html">Android—Glide使用教程（二）</a></li>
+                 
+                <li class="side-title"><span>Gradle</span></li>
+                
+                <li><a title="sourceSets使用" href="16251022385733.html">sourceSets使用</a></li>
+                
+                <li><a title="脑洞大开，Gradle项目管理依赖的船新版本" href="16251022385689.html">脑洞大开，Gradle项目管理依赖的船新版本</a></li>
+                 
+                <li class="side-title"><span>Rxjava</span></li>
+                
+                <li><a title="RxJava2 只看这一篇文章就够了" href="16251022491138.html">RxJava2 只看这一篇文章就够了</a></li>
+                 
+            </ul>
+        </div>
+        <div class="columns"> 
+
+
+	
+		<div class="markdown-body">
+		<h1>sourceSets使用</h1>
+
+		<ul>
+<li>
+<a href="#toc_0">输出sdk的时候靠删改代码？试试gradle配置吧</a>
+</li>
+<li>
+<a href="#toc_1">一.背景</a>
+</li>
+<li>
+<a href="#toc_2">二.思考</a>
+</li>
+<li>
+<a href="#toc_3">三.开干</a>
+<ul>
+<li>
+<a href="#toc_4">1. 先剥离不同sdk的源代码，放在不同的文件夹下面。通用代码放在默认的java文件夹中。</a>
+</li>
+<li>
+<a href="#toc_5">2. 在 gradle.properties 中新增sdkType配置</a>
+</li>
+<li>
+<a href="#toc_6">3. 在 build.gradle 配置源文件路径</a>
+</li>
+<li>
+<a href="#toc_7">4. 修改编译产物的名称(为了直观区分打出来的是啥)</a>
+</li>
+<li>
+<a href="#toc_8">5. 其他配置</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#toc_9">四.结尾</a>
+</li>
+</ul>
+
+
+<h1 id="toc_0">输出sdk的时候靠删改代码？试试gradle配置吧</h1>
+
+<blockquote>
+<p>靠着打代码，我终于走上了人生巅峰，看着支付宝里似乎永远花不完的余额，我不禁开始迷茫。后面的路在何方？</p>
+
+<p>一阵恍惚，我从工位上醒了过来，夏日炎炎，办公室的风扇吹不走空气中的燥热。</p>
+
+<p>妈呀果然是梦~~</p>
+</blockquote>
+
+<h1 id="toc_1">一.背景</h1>
+
+<p>最近团队做一个提供 ocr 识别能力的 sdk 项目。身为一个普通码农，当然是领导说干啥就干啥，于是和算法对接吭哧吭哧打完了 身份证识别，手机号识别等卡证识别功能。开心，交付给了客户！！</p>
+
+<p>不久领导又说搞个指尖识别的sdk提供给用户做指尖搜题用，和原来的项目放一块，搞个统一的能力sdk。但是输出sdk的时候要求剔除掉指尖识别之外的无关代码。为了赶进度挥洒之间，我又写完了，在打包的时候，直接拉了个新的输出分支剔除旧代码。就这样输出了。</p>
+
+<p>后面又要一个新的sdk能力，图像质检 sdk 。</p>
+
+<p>麻烦的问题就跳出来了：</p>
+
+<ul>
+<li><strong>输出sdk的时候需要每次拉新分支剔除，并每次更新的时候合并</strong></li>
+<li><strong>每个sdk能力都需要独立，又可以合并</strong></li>
+</ul>
+
+<p>怎么办呢~~</p>
+
+<h1 id="toc_2">二.思考</h1>
+
+<blockquote>
+<p>这个问题说是问题也不是问题，无非是有点繁琐，维护好几个不同能力的独立分支就完事了。</p>
+
+<p>但是我懒呀~~</p>
+</blockquote>
+
+<p>聪明的我就想到了两个方法。</p>
+
+<ol>
+<li>每个能力分出独立的模块，编译的时候打对应能力模块就好啦</li>
+<li>使用gradle 配置编译不同的源文件，根据配置来打出包含不同源码的sdk</li>
+</ol>
+
+<p><strong>最后当然是选择了使用gradle</strong> <strong>sourceSets</strong> <strong>配置的方式来编译不同的sdk源码啦。</strong>为什么不选分模块呢？因为对外提供的是aar包，而不是maven仓库地址。所以存在多个能力多个aar包的情况，尽量提供少的aar包吧，方便用户方便自己。</p>
+
+<h1 id="toc_3">三.开干</h1>
+
+<h2 id="toc_4">1. 先剥离不同sdk的源代码，放在不同的文件夹下面。通用代码放在默认的java文件夹中。</h2>
+
+<p>这是一个细活，避免互相依赖，尽量依赖倒置，解开耦合，让每个sdk能力都能独立编译，并且能一起编译。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/api888/PublicPic@main//img/37e94fdf47f74a6ea17b5926f8924f33_tplv-k3u1fbpfcp-zoom-1.jpg" alt=""/></p>
+
+<h2 id="toc_5">2. 在 gradle.properties 中新增sdkType配置</h2>
+
+<pre><code class="language-text">## 手机号，身份证银行卡等
+#sdkType=ocr
+
+## 图像质检
+#sdkType=graphcheck
+
+## 指尖检测
+#sdkType=fingerdetect
+
+## 依赖全部代码
+sdkType=all
+</code></pre>
+
+<h2 id="toc_6">3. 在 build.gradle 配置源文件路径</h2>
+
+<pre><code class="language-text">android {
+    //...其他配置代码
+    sourceSets {
+        main {
+            //默认文件夹
+            def javaPaths = [&quot;src/main/java&quot;]
+            def assetsPaths = [&quot;src/main/assets&quot;]
+
+            def javaGraphCheck = &quot;src/main/javaGraphcheck&quot;
+            def javaFingerDetect = &quot;src/main/javaFingerdetect&quot;
+            def javaOcr = &quot;src/main/javaOcr&quot;
+
+            def assetsGraphCheck = &quot;src/main/assetsLens&quot;
+            def assetsOcr = &quot;src/main/assetsOcr&quot;
+            def assetsFinger = &quot;src/main/assetsFinger&quot;
+
+            if (sdkType == &quot;graphcheck&quot;) {
+                javaPaths.add(javaGraphCheck)
+
+                assetsPaths.add(assetsGraphCheck)
+            } else if (sdkType == &quot;fingerdetect&quot;) {
+                javaPaths.add(javaFingerDetect)
+
+                assetsPaths.add(assetsFinger)
+            } else if (sdkType == &quot;ocr&quot;) {
+                javaPaths.add(javaOcr)
+
+                assetsPaths.add(assetsOcr)
+            } else {
+                javaPaths.add(javaGraphCheck)
+                javaPaths.add(javaFingerDetect)
+                javaPaths.add(javaOcr)
+
+                assetsPaths.add(assetsGraphCheck)
+                assetsPaths.add(assetsOcr)
+                assetsPaths.add(assetsFinger)
+            }
+            java.srcDirs = javaPaths
+            assets.srcDirs = assetsPaths
+        }
+    }
+}
+</code></pre>
+
+<h2 id="toc_7">4. 修改编译产物的名称(为了直观区分打出来的是啥)</h2>
+
+<pre><code class="language-text">android {
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile(&#39;proguard-android-optimize.txt&#39;), &#39;proguard-rules.pro&#39;
+            android.libraryVariants.all { variant -&gt;
+                variant.outputs.all {
+                    outputFileName = &quot;sail_ocr-${version}-${sdkType}.aar&quot;
+                }
+            }
+        }
+    }
+}
+</code></pre>
+
+<h2 id="toc_8">5. 其他配置</h2>
+
+<p>dependencies 依赖 和 setting.gradle 中也可以根据 sdkType 来判断。如下就是我项目中的demo模块树。</p>
+
+<pre><code class="language-text">if (sdkType == &quot;graphcheck&quot;) {
+    include &#39;:lensdemo&#39;
+    include &#39;:module_graphcheck&#39;
+    include &#39;:module_ocr&#39;
+} else if (sdkType == &quot;fingerdetect&quot;) {
+    include &#39;:demo_finger_detect&#39;
+    include &#39;:module_scan_finger&#39;
+    include &#39;:module_ocr&#39;
+    include &#39;:module_base&#39;
+    include &#39;:module_ui&#39;
+
+    include &#39;:lib_base&#39;
+    include &#39;:lib_utils&#39;
+} else if (sdkType == &quot;ocr&quot;) {
+    include &#39;:demo_ocr&#39;
+    include &#39;:module_ocr&#39;
+    include &#39;:module_base&#39;
+    include &#39;:module_ui&#39;
+
+    include &#39;:lib_base&#39;
+    include &#39;:lib_utils&#39;
+} else {
+    include &#39;:app&#39;
+    include &#39;:demo_ocr&#39;
+    include &#39;:lensdemo&#39;
+    include &#39;:module_graphcheck&#39;
+    include &#39;:module_scan_finger&#39;
+    include &#39;:module_profile&#39;
+
+    include &#39;:module_ocr&#39;
+    include &#39;:module_base&#39;
+    include &#39;:module_ui&#39;
+    include &#39;:profile_photo_frame&#39;
+
+    include &#39;:lib_base&#39;
+    include &#39;:lib_utils&#39;
+
+}
+
+复制代码
+</code></pre>
+
+<p><strong>现在只需要在gradle. properties中修改sdkType的值，就可以直接编译出对应的sdk包</strong></p>
+
+<h1 id="toc_9">四.结尾</h1>
+
+<p>这样的工作并不难，做完之后却有小小的成就感。</p>
+
+<p>抽出那么半天一天时间专门用来剥离代码，解除耦合，调试错误。琐碎得工作却让时间流逝得飞快。</p>
+
+<blockquote>
+<p>很多事情都不难，只是迟迟没有人去做罢了。</p>
+</blockquote>
+
+
+		</div>
+	
+
+ 
+	
+
+  
+  </div>
+</div>
+
+
+<div class="page-bottom">
+    <div class="copyright">
+        <a href="mailto:888api@sina.com">郝彬彬</a> &copy; 
+    </div>
+    <div class="copyright text-right">
+        <a href="#main-content">TOP</a>
+    </div>
+</div>
+
+</div>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+    figure {
+        margin: 0.4em 0;
+        padding: 0;
+    }
+    
+    figcaption {
+        text-align: center;
+    }
+    /* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+    /**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+    
+    code[class*="language-"],
+    pre[class*="language-"] {
+        color: black;
+        background: none;
+        text-shadow: 0 1px white;
+        font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        text-align: left;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        line-height: 1.5;
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
+        -ms-hyphens: none;
+        hyphens: none;
+    }
+    
+    pre[class*="language-"]::-moz-selection,
+    pre[class*="language-"] ::-moz-selection,
+    code[class*="language-"]::-moz-selection,
+    code[class*="language-"] ::-moz-selection {
+        text-shadow: none;
+        background: #b3d4fc;
+    }
+    
+    pre[class*="language-"]::selection,
+    pre[class*="language-"] ::selection,
+    code[class*="language-"]::selection,
+    code[class*="language-"] ::selection {
+        text-shadow: none;
+        background: #b3d4fc;
+    }
+    
+    @media print {
+        code[class*="language-"],
+        pre[class*="language-"] {
+            text-shadow: none;
+        }
+    }
+    /* Code blocks */
+    
+    pre[class*="language-"] {
+        padding: 1em;
+        margin: .5em 0;
+        overflow: auto;
+    }
+    
+     :not(pre)>code[class*="language-"],
+    pre[class*="language-"] {
+        background: #F7F7F7;
+    }
+    /* Inline code */
+    
+     :not(pre)>code[class*="language-"] {
+        padding: .1em;
+        border-radius: .3em;
+        white-space: normal;
+    }
+    
+    .token.comment,
+    .token.prolog,
+    .token.doctype,
+    .token.cdata {
+        color: slategray;
+    }
+    
+    .token.punctuation {
+        color: #999;
+    }
+    
+    .namespace {
+        opacity: .7;
+    }
+    
+    .token.property,
+    .token.tag,
+    .token.boolean,
+    .token.number,
+    .token.constant,
+    .token.symbol,
+    .token.deleted {
+        color: #905;
+    }
+    
+    .token.selector,
+    .token.attr-name,
+    .token.string,
+    .token.char,
+    .token.builtin,
+    .token.inserted {
+        color: #690;
+    }
+    
+    .token.operator,
+    .token.entity,
+    .token.url,
+    .language-css .token.string,
+    .style .token.string {
+        color: #9a6e3a;
+        background: hsla(0, 0%, 100%, .5);
+    }
+    
+    .token.atrule,
+    .token.attr-value,
+    .token.keyword {
+        color: #07a;
+    }
+    
+    .token.function,
+    .token.class-name {
+        color: #DD4A68;
+    }
+    
+    .token.regex,
+    .token.important,
+    .token.variable {
+        color: #e90;
+    }
+    
+    .token.important,
+    .token.bold {
+        font-weight: bold;
+    }
+    
+    .token.italic {
+        font-style: italic;
+    }
+    
+    .token.entity {
+        cursor: help;
+    }
+    
+    pre[class*="language-"].line-numbers {
+        position: relative;
+        padding-left: 3.8em;
+        counter-reset: linenumber;
+    }
+    
+    pre[class*="language-"].line-numbers>code {
+        position: relative;
+        white-space: inherit;
+    }
+    
+    .line-numbers .line-numbers-rows {
+        position: absolute;
+        pointer-events: none;
+        top: 0;
+        font-size: 100%;
+        left: -3.8em;
+        width: 3em;
+        /* works for line-numbers below 1000 lines */
+        letter-spacing: -1px;
+        border-right: 1px solid #999;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    .line-numbers-rows>span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+    
+    .line-numbers-rows>span:before {
+        content: counter(linenumber);
+        color: #999;
+        display: block;
+        padding-right: 0.8em;
+        text-align: right;
+    }
+</style>
+
+<script src="asset/js/foundation.min.js"></script>
+<script src="asset/js/foundation/foundation.offcanvas.js"></script>
+<script>
+    $(document).foundation();
+</script>
+<script src="asset/js/watermark.js"></script>
+
+</body>
+
+</html>

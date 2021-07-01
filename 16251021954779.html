@@ -1,0 +1,932 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        烂笔头
+    </title>
+    <meta name="description" content="">
+    <link href="atom.xml" rel="alternate" title="烂笔头" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+
+</head>
+
+<body class="antialiased hide-extras"></body>
+
+<div class="inner-wrap">
+
+
+    <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+        <div id="header">
+            <h1><a href="index.html">烂笔头</a></h1>
+        </div>
+
+    </nav>
+
+
+    <div class="row">
+        <div class="sidebar">
+            <ul id="side-nav" class="side-nav">
+
+                
+                <li class="side-title"><span>Android</span></li>
+                
+                <li><a title="DialogFragment内存泄露问题能不能一次性改好" href="16251021954820.html">DialogFragment内存泄露问题能不能一次性改好</a></li>
+                
+                <li><a title="Android静默安装实现方案，仿360手机助手秒装和智能安装功能" href="16251021954779.html">Android静默安装实现方案，仿360手机助手秒装和智能安装功能</a></li>
+                
+                <li><a title="Android 添加水印功能" href="16251021954737.html">Android 添加水印功能</a></li>
+                
+                <li><a title="Android 监听手电筒状态" href="16251021954689.html">Android 监听手电筒状态</a></li>
+                 
+                <li class="side-title"><span>Github</span></li>
+                
+                <li><a title="使用Github+jsdelivr构建你的免费图床" href="16251022060206.html">使用Github+jsdelivr构建你的免费图床</a></li>
+                 
+                <li class="side-title"><span>Glide</span></li>
+                
+                <li><a title="Glide源码修改-自定义磁盘缓存实现永久存储" href="16251022251608.html">Glide源码修改-自定义磁盘缓存实现永久存储</a></li>
+                
+                <li><a title="Android—Glide使用教程（一）" href="16251022251568.html">Android—Glide使用教程（一）</a></li>
+                
+                <li><a title="Android—Glide使用教程（三）" href="16251022251527.html">Android—Glide使用教程（三）</a></li>
+                
+                <li><a title="Android—Glide使用教程（二）" href="16251022251484.html">Android—Glide使用教程（二）</a></li>
+                 
+                <li class="side-title"><span>Gradle</span></li>
+                
+                <li><a title="sourceSets使用" href="16251022385733.html">sourceSets使用</a></li>
+                
+                <li><a title="脑洞大开，Gradle项目管理依赖的船新版本" href="16251022385689.html">脑洞大开，Gradle项目管理依赖的船新版本</a></li>
+                 
+                <li class="side-title"><span>Rxjava</span></li>
+                
+                <li><a title="RxJava2 只看这一篇文章就够了" href="16251022491138.html">RxJava2 只看这一篇文章就够了</a></li>
+                 
+            </ul>
+        </div>
+        <div class="columns"> <div id="main-content" class="markdown-body">
+    <h1>Android静默安装实现方案，仿360手机助手秒装和智能安装功能</h1>
+
+    <ul>
+<li>
+<a href="#toc_0">一、秒装</a>
+</li>
+<li>
+<a href="#toc_1">二、智能安装</a>
+</li>
+</ul>
+
+
+<p>之前有很多朋友都问过我，在 Android 系统中怎样才能实现静默安装呢？所谓的静默安装，就是不用弹出系统的安装界面，在不影响用户任何操作的情况下不知不觉地将程序装好。虽说这种方式看上去不打搅用户，但是却存在着一个问题，因为 Android 系统会在安装界面当中把程序所声明的权限展示给用户看，用户来评估一下这些权限然后决定是否要安装该程序，但如果使用了静默安装的方式，也就没有地方让用户看权限了，相当于用户被动接受了这些权限。在 Android 官方看来，这显示是一种非常危险的行为，因此静默安装这一行为系统是不会开放给开发者的。</p>
+
+<p>但是总是弹出一个安装对话框确实是一种体验比较差的行为，这一点 Google 自己也意识到了，因此 Android 系统对自家的 Google Play 商店开放了静默安装权限，也就是说所有从 Google Play 上下载的应用都可以不用弹出安装对话框了。这一点充分说明了拥有权限的重要性，自家的系统想怎么改就怎么改。借鉴 Google 的做法，很多国内的手机厂商也采用了类似的处理方式，比如说小米手机在小米商店中下载应用也是不需要弹出安装对话框的，因为小米可以在 MIUI 中对 Android 系统进行各种定制。因此，如果我们只是做一个普通的应用，其实不太需要考虑静默安装这个功能，因为我们只需要将应用上架到相应的商店当中，就会自动拥有静默安装的功能。</p>
+
+<p>但是如果我们想要做的也是一个类似于商店的平台呢？比如说像 360 手机助手，它广泛安装于各种各样的手机上，但都是作为一个普通的应用存在的，而没有 Google 或小米这样的特殊权限，那 360 手机助手应该怎样做到更好的安装体验呢？为此 360 手机助手提供了两种方案， 秒装（需 ROOT 权限）和智能安装，如下图示：</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/api888/PublicPic@main//img/8ff46b688fe644dea0ef17f57d0d46ab_tplv-k3u1fbpfcp-zoom-1.jpg" alt=""/></p>
+
+<p>因此，今天我们就模仿一下 360 手机助手的实现方式，来给大家提供一套静默安装的解决方案。</p>
+
+<h1 id="toc_0">一、秒装</h1>
+
+<p>所谓的秒装其实就是需要 ROOT 权限的静默安装，其实静默安装的原理很简单，就是调用 Android 系统的 pm install 命令就可以了，但关键的问题就在于，pm 命令系统是不授予我们权限调用的，因此只能在拥有 ROOT 权限的手机上去申请权限才行。</p>
+
+<p>下面我们开始动手，新建一个 InstallTest 项目，然后创建一个 SilentInstall 类作为静默安装功能的实现类，代码如下所示：</p>
+
+<pre><code class="language-java">/**
+ * 静默安装的实现类，调用install()方法执行具体的静默安装逻辑。
+ * 原文地址：http://blog.csdn.net/guolin_blog/article/details/47803149
+ * @author guolin
+ * @since 2015/12/7
+ */
+public class SilentInstall {
+ 
+    /**
+     * 执行具体的静默安装逻辑，需要手机ROOT。
+     * @param apkPath
+     *          要安装的apk文件的路径
+     * @return 安装成功返回true，安装失败返回false。
+     */
+    public boolean install(String apkPath) {
+        boolean result = false;
+        DataOutputStream dataOutputStream = null;
+        BufferedReader errorStream = null;
+        try {
+            // 申请su权限
+            Process process = Runtime.getRuntime().exec(&quot;su&quot;);
+            dataOutputStream = new DataOutputStream(process.getOutputStream());
+            // 执行pm install命令
+            String command = &quot;pm install -r &quot; + apkPath + &quot;\n&quot;;
+            dataOutputStream.write(command.getBytes(Charset.forName(&quot;utf-8&quot;)));
+            dataOutputStream.flush();
+            dataOutputStream.writeBytes(&quot;exit\n&quot;);
+            dataOutputStream.flush();
+            process.waitFor();
+            errorStream = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String msg = &quot;&quot;;
+            String line;
+            // 读取命令的执行结果
+            while ((line = errorStream.readLine()) != null) {
+                msg += line;
+            }
+            Log.d(&quot;TAG&quot;, &quot;install msg is &quot; + msg);
+            // 如果执行结果中包含Failure字样就认为是安装失败，否则就认为安装成功
+            if (!msg.contains(&quot;Failure&quot;)) {
+                result = true;
+            }
+        } catch (Exception e) {
+            Log.e(&quot;TAG&quot;, e.getMessage(), e);
+        } finally {
+            try {
+                if (dataOutputStream != null) {
+                    dataOutputStream.close();
+                }
+                if (errorStream != null) {
+                    errorStream.close();
+                }
+            } catch (IOException e) {
+                Log.e(&quot;TAG&quot;, e.getMessage(), e);
+            }
+        }
+        return result;
+    }
+ 
+}
+</code></pre>
+
+<p>可以看到，SilentInstall 类中只有一个 install() 方法，所有静默安装的逻辑都在这个方法中了，那么我们具体来看一下这个方法。首先在第 21 行调用了 Runtime.getRuntime().exec(&quot;su&quot;) 方法，在这里先申请 ROOT 权限，不然的话后面的操作都将失败。然后在第 24 行开始组装静默安装命令，命令的格式就是 pm install -r <apk 路径 >，-r 参数表示如果要安装的 apk 已经存在了就覆盖安装的意思，apk 路径是作为方法参数传入的。接下来的几行就是执行上述命令的过程，注意安装这个过程是同步的，因此我们在下面调用了 process.waitFor() 方法，即安装要多久，我们就要在这里等多久。等待结束之后说明安装过程结束了，接下来我们要去读取安装的结果并进行解析，解析的逻辑也很简单，如果安装结果中包含 Failure 字样就说明安装失败，反之则说明安装成功。</p>
+
+<p>整个方法还是非常简单易懂的，下面我们就来搭建调用这个方法的环境。修改 activity_main.xml 中的代码，如下所示：</p>
+
+<pre><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    xmlns:tools=&quot;http://schemas.android.com/tools&quot;
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;match_parent&quot;
+    android:orientation=&quot;vertical&quot;
+    android:paddingBottom=&quot;@dimen/activity_vertical_margin&quot;
+    android:paddingLeft=&quot;@dimen/activity_horizontal_margin&quot;
+    android:paddingRight=&quot;@dimen/activity_horizontal_margin&quot;
+    android:paddingTop=&quot;@dimen/activity_vertical_margin&quot;
+    tools:context=&quot;com.example.installtest.MainActivity&quot;&gt;
+ 
+    &lt;LinearLayout
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;wrap_content&quot;&gt;
+ 
+        &lt;Button
+            android:layout_width=&quot;wrap_content&quot;
+            android:layout_height=&quot;wrap_content&quot;
+            android:onClick=&quot;onChooseApkFile&quot;
+            android:text=&quot;选择安装包&quot; /&gt;
+ 
+        &lt;TextView
+            android:id=&quot;@+id/apkPathText&quot;
+            android:layout_width=&quot;0dp&quot;
+            android:layout_height=&quot;wrap_content&quot;
+            android:layout_weight=&quot;1&quot;
+            android:layout_gravity=&quot;center_vertical&quot;
+            /&gt;
+ 
+    &lt;/LinearLayout&gt;
+ 
+ 
+    &lt;View
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;1dp&quot;
+        android:background=&quot;@android:color/darker_gray&quot; /&gt;
+ 
+    &lt;Button
+        android:layout_width=&quot;wrap_content&quot;
+        android:layout_height=&quot;wrap_content&quot;
+        android:onClick=&quot;onSilentInstall&quot;
+        android:text=&quot;秒装&quot; /&gt;
+ 
+    &lt;View
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;1dp&quot;
+        android:background=&quot;@android:color/darker_gray&quot; /&gt;
+ 
+    &lt;Button
+        android:layout_width=&quot;wrap_content&quot;
+        android:layout_height=&quot;wrap_content&quot;
+        android:onClick=&quot;onForwardToAccessibility&quot;
+        android:text=&quot;开启智能安装服务&quot; /&gt;
+ 
+    &lt;Button
+        android:layout_width=&quot;wrap_content&quot;
+        android:layout_height=&quot;wrap_content&quot;
+        android:onClick=&quot;onSmartInstall&quot;
+        android:text=&quot;智能安装&quot; /&gt;
+&lt;/LinearLayout&gt;
+</code></pre>
+
+<p>这里我们先将程序的主界面确定好，主界面上拥有四个按钮，第一个按钮用于选择 apk 文件的，第二个按钮用于开始秒装，第三个按钮用于开启智能安装服务，第四个按钮用于开始智能安装，这里我们暂时只能用到前两个按钮。那么调用 SilentInstall 的 install() 方法需要传入 apk 路</p>
+
+<p>径，因此我们需要先把文件选择器的功能实现好，新建 activity_file_explorer.xml 和 list_item.xml 作为文件选择器的布局文件，代码分别如下所示：</p>
+
+<pre><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    android:orientation=&quot;vertical&quot;
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;match_parent&quot;&gt;
+ 
+    &lt;ListView
+        android:id=&quot;@+id/list_view&quot;
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;match_parent&quot;
+         /&gt;
+ 
+&lt;/LinearLayout&gt;
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;LinearLayout
+    xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;wrap_content&quot;
+    android:padding=&quot;4dp&quot;
+    android:orientation=&quot;horizontal&quot;&gt;
+ 
+    &lt;ImageView android:id=&quot;@+id/img&quot;
+        android:layout_width=&quot;32dp&quot;
+        android:layout_margin=&quot;4dp&quot;
+        android:layout_gravity=&quot;center_vertical&quot;
+        android:layout_height=&quot;32dp&quot;/&gt;
+ 
+ 
+    &lt;TextView android:id=&quot;@+id/name&quot;
+        android:textSize=&quot;18sp&quot;
+        android:textStyle=&quot;bold&quot;
+        android:layout_width=&quot;match_parent&quot;
+        android:gravity=&quot;center_vertical&quot;
+        android:layout_height=&quot;50dp&quot;/&gt;
+ 
+&lt;/LinearLayout&gt;
+</code></pre>
+
+<p>然后新建 FileExplorerActivity 作为文件选择器的 Activity，代码如下：</p>
+
+<pre><code class="language-java">public class FileExplorerActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+ 
+    ListView listView;
+    SimpleAdapter adapter;
+    String rootPath = Environment.getExternalStorageDirectory().getPath();
+    String currentPath = rootPath;
+    List&lt;Map&lt;String, Object&gt;&gt; list = new ArrayList&lt;&gt;();
+ 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_file_explorer);
+        listView = (ListView) findViewById(R.id.list_view);
+        adapter = new SimpleAdapter(this, list, R.layout.list_item,
+                new String[]{&quot;name&quot;, &quot;img&quot;}, new int[]{R.id.name, R.id.img});
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
+        refreshListItems(currentPath);
+    }
+ 
+    private void refreshListItems(String path) {
+        setTitle(path);
+        File[] files = new File(path).listFiles();
+        list.clear();
+        if (files != null) {
+            for (File file : files) {
+                Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+                if (file.isDirectory()) {
+                    map.put(&quot;img&quot;, R.drawable.directory);
+                } else {
+                    map.put(&quot;img&quot;, R.drawable.file_doc);
+                }
+                map.put(&quot;name&quot;, file.getName());
+                map.put(&quot;currentPath&quot;, file.getPath());
+                list.add(map);
+            }
+        }
+        adapter.notifyDataSetChanged();
+    }
+ 
+    @Override
+    public void onItemClick(AdapterView&lt;?&gt; parent, View v, int position, long id) {
+        currentPath = (String) list.get(position).get(&quot;currentPath&quot;);
+        File file = new File(currentPath);
+        if (file.isDirectory())
+            refreshListItems(currentPath);
+        else {
+            Intent intent = new Intent();
+            intent.putExtra(&quot;apk_path&quot;, file.getPath());
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+ 
+    }
+ 
+    @Override
+    public void onBackPressed() {
+        if (rootPath.equals(currentPath)) {
+            super.onBackPressed();
+        } else {
+            File file = new File(currentPath);
+            currentPath = file.getParentFile().getPath();
+            refreshListItems(currentPath);
+        }
+    }
+}
+</code></pre>
+
+<p>这部分代码由于和我们本篇文件的主旨没什么关系，主要是为了方便 demo 展示的，因此我就不进行讲解了。</p>
+
+<p>接下来修改 MainActivity 中的代码，如下所示：</p>
+
+<pre><code class="language-java">/**
+ * 仿360手机助手秒装和智能安装功能的主Activity。
+ * 原文地址：http://blog.csdn.net/guolin_blog/article/details/47803149
+ * @author guolin
+ * @since 2015/12/7
+ */
+public class MainActivity extends AppCompatActivity {
+ 
+    TextView apkPathText;
+ 
+    String apkPath;
+ 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        apkPathText = (TextView) findViewById(R.id.apkPathText);
+    }
+ 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0 &amp;&amp; resultCode == RESULT_OK) {
+            apkPath = data.getStringExtra(&quot;apk_path&quot;);
+            apkPathText.setText(apkPath);
+        }
+    }
+ 
+    public void onChooseApkFile(View view) {
+        Intent intent = new Intent(this, FileExplorerActivity.class);
+        startActivityForResult(intent, 0);
+    }
+ 
+    public void onSilentInstall(View view) {
+        if (!isRoot()) {
+            Toast.makeText(this, &quot;没有ROOT权限，不能使用秒装&quot;, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(apkPath)) {
+            Toast.makeText(this, &quot;请选择安装包！&quot;, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final Button button = (Button) view;
+        button.setText(&quot;安装中&quot;);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SilentInstall installHelper = new SilentInstall();
+                final boolean result = installHelper.install(apkPath);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (result) {
+                            Toast.makeText(MainActivity.this, &quot;安装成功！&quot;, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, &quot;安装失败！&quot;, Toast.LENGTH_SHORT).show();
+                        }
+                        button.setText(&quot;秒装&quot;);
+                    }
+                });
+ 
+            }
+        }).start();
+ 
+    }
+ 
+    public void onForwardToAccessibility(View view) {
+ 
+    }
+ 
+    public void onSmartInstall(View view) {
+ 
+    }
+ 
+    /**
+     * 判断手机是否拥有Root权限。
+     * @return 有root权限返回true，否则返回false。
+     */
+    public boolean isRoot() {
+        boolean bool = false;
+        try {
+            bool = new File(&quot;/system/bin/su&quot;).exists() || new File(&quot;/system/xbin/su&quot;).exists();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bool;
+    }
+ 
+}
+</code></pre>
+
+<p>可以看到，在 MainActivity 中，我们对四个按钮点击事件的回调方法都进行了定义，当点击选择安装包按钮时就会调用 onChooseApkFile() 方法，当点击秒装按钮时就会调用 onSilentInstall() 方法。在 onChooseApkFile() 方法方法中，我们通过 Intent 打开了 FileExplorerActivity，然后在 onActivityResult() 方法当中读取选择的 apk 文件路径。在 onSilentInstall() 方法当中，先判断设备是否 ROOT，如果没有 ROOT 就直接 return，然后判断安装包是否已选择，如果没有也直接 return。接下来我们开启了一个线程来调用 SilentInstall.install() 方法，因为安装过程会比较耗时，如果不开线程的话主线程就会被卡住，不管安装成功还是失败，最后都会使用 Toast 来进行提示。</p>
+
+<p>代码就这么多，最后我们来配置一下 AndroidManifest.xml 文件：</p>
+
+<pre><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    package=&quot;com.example.installtest&quot;&gt;
+ 
+    &lt;uses-permission android:name=&quot;android.permission.READ_EXTERNAL_STORAGE&quot; /&gt;
+ 
+    &lt;application
+        android:allowBackup=&quot;true&quot;
+        android:icon=&quot;@mipmap/ic_launcher&quot;
+        android:label=&quot;@string/app_name&quot;
+        android:supportsRtl=&quot;true&quot;
+        android:theme=&quot;@style/AppTheme&quot;&gt;
+        &lt;activity android:name=&quot;.MainActivity&quot;&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;
+ 
+                &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;
+            &lt;/intent-filter&gt;
+        &lt;/activity&gt;
+ 
+        &lt;activity android:name=&quot;.FileExplorerActivity&quot;/&gt;
+    &lt;/application&gt;
+ 
+&lt;/manifest&gt;
+</code></pre>
+
+<p>并没有什么特殊的地方，由于选择 apk 文件需要读取 SD 卡，因此在 AndroidManifest.xml 文件中要记得声明读 SD 卡权限。</p>
+
+<p>另外还有一点需要注意，在 Android 6.0 系统中，读写 SD 卡权限被列为了危险权限，因此如果将程序的 targetSdkVersion 指定成了 23 则需要做专门的 6.0 适配，这里简单起见，我把 targetSdkVersion 指定成了 22，因为 6.0 的适配工作也不在文章的讲解范围之内。</p>
+
+<p>现在运行程序，就可以来试一试秒装功能了，切记手机一定要 ROOT，效果如下图所示：</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/api888/PublicPic@main//img/04d9463778d24e57aa759e7849456f79_tplv-k3u1fbpfcp-zoom-1.gif" alt=""/></p>
+
+<p>可以看到，这里我们选择的网易新闻安装包已成功安装到手机上了，并且没有弹出系统的安装界面，由此证明秒装功能已经成功实现了。</p>
+
+<h1 id="toc_1">二、智能安装</h1>
+
+<p>那么对于 ROOT 过的手机，秒装功能确实可以避免弹出系统安装界面，在不影响用户操作的情况下实现静默安装，但是对于绝大部分没有 ROOT 的手机，这个功能是不可用的。那么我们应该怎么办呢？为此 360 手机助手提供了一种折中方案，就是借助 Android 提供的无障碍服务来实现智能安装。所谓的智能安装其实并不是真正意义上的静默安装，因为它还是要弹出系统安装界面的，只不过可以在安装界面当中释放用户的操作，由智能安装功能来模拟用户点击，安装完成之后自动关闭界面。这个功能是需要用户手动开启的，并且只支持 Android 4.1 之后的手机，如下图所示：</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/api888/PublicPic@main//img/ad58ed9b53aa4262b8a6d5cbfcf15f7f_tplv-k3u1fbpfcp-zoom-1.jpg" alt=""/></p>
+
+<p>好的，那么接下来我们就模仿一下 360 手机助手，来实现类似的智能安装功能。</p>
+
+<p>智能安装功能的实现原理要借助 Android 提供的无障碍服务，关于无障碍服务的详细讲解可参考官方文档：<a href="http://developer.android.com/guide/topics/ui/accessibility/services.html">developer.android.com/guide/topic…</a>。</p>
+
+<p>首先在 res/xml 目录下新建一个 accessibility_service_config.xml 文件，代码如下所示：</p>
+
+<pre><code class="language-markup">&lt;accessibility-service xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+                       android:packageNames=&quot;com.android.packageinstaller&quot;
+                       android:description=&quot;@string/accessibility_service_description&quot;
+                       android:accessibilityEventTypes=&quot;typeAllMask&quot;
+                       android:accessibilityFlags=&quot;flagDefault&quot;
+                       android:accessibilityFeedbackType=&quot;feedbackGeneric&quot;
+                       android:canRetrieveWindowContent=&quot;true&quot;
+    /&gt;
+</code></pre>
+
+<p>其中，packageNames 指定我们要监听哪个应用程序下的窗口活动，这里写 com.android.packageinstaller 表示监听 Android 系统的安装界面。description 指定在无障碍服务当中显示给用户看的说明信息，上图中 360 手机助手的一大段内容就是在这里指定的。accessibilityEventTypes 指定我们在监听窗口中可以模拟哪些事件，这里写 typeAllMask 表示所有的事件都能模拟。accessibilityFlags 可以指定无障碍服务的一些附加参数，这里我们传默认值 flagDefault 就行。accessibilityFeedbackType 指定无障碍服务的反馈方式，实际上无障碍服务这个功能是 Android 提供给一些残疾人士使用的，比如说盲人不方便使用手机，就可以借助无障碍服务配合语音反馈来操作手机，而我们其实是不需要反馈的，因此随便传一个值就可以，这里传入 feedbackGeneric。最后 canRetrieveWindowContent 指定是否允许我们的程序读取窗口中的节点和内容，必须写 true。</p>
+
+<p>记得在 string.xml 文件中写一下 description 中指定的内容，如下所示：</p>
+
+<pre><code class="language-markup">&lt;resources&gt;
+    &lt;string name=&quot;app_name&quot;&gt;InstallTest&lt;/string&gt;
+    &lt;string name=&quot;accessibility_service_description&quot;&gt;智能安装服务，无需用户的任何操作就可以自动安装程序。&lt;/string&gt;
+&lt;/resources&gt;
+</code></pre>
+
+<p>接下来修改 AndroidManifest.xml 文件，在里面配置无障碍服务：</p>
+
+<pre><code class="language-markup">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    package=&quot;com.example.installtest&quot;&gt;
+ 
+    &lt;uses-permission android:name=&quot;android.permission.READ_EXTERNAL_STORAGE&quot; /&gt;
+ 
+    &lt;application
+        android:allowBackup=&quot;true&quot;
+        android:icon=&quot;@mipmap/ic_launcher&quot;
+        android:label=&quot;@string/app_name&quot;
+        android:supportsRtl=&quot;true&quot;
+        android:theme=&quot;@style/AppTheme&quot;&gt;
+        ......
+ 
+        &lt;service
+            android:name=&quot;.MyAccessibilityService&quot;
+            android:label=&quot;我的智能安装&quot;
+            android:permission=&quot;android.permission.BIND_ACCESSIBILITY_SERVICE&quot;&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&quot;android.accessibilityservice.AccessibilityService&quot; /&gt;
+            &lt;/intent-filter&gt;
+ 
+            &lt;meta-data
+                android:name=&quot;android.accessibilityservice&quot;
+                android:resource=&quot;@xml/accessibility_service_config&quot; /&gt;
+        &lt;/service&gt;
+    &lt;/application&gt;
+ 
+&lt;/manifest&gt;
+</code></pre>
+
+<p>这部分配置的内容多数是固定的，必须要声明一个 android.permission.BIND_ACCESSIBILITY_SERVICE 的权限，且必须要有一个值为 android.accessibilityservice.AccessibilityService 的 action，然后我们通过 将刚才创建的配置文件指定进去。</p>
+
+<p>接下来就是要去实现智能安装功能的具体逻辑了，创建一个 MyAccessibilityService 类并继承自 AccessibilityService，代码如下所示：</p>
+
+<pre><code class="language-java">/**
+ * 智能安装功能的实现类。
+ * 原文地址：http://blog.csdn.net/guolin_blog/article/details/47803149
+ * @author guolin
+ * @since 2015/12/7
+ */
+public class MyAccessibilityService extends AccessibilityService {
+ 
+    Map&lt;Integer, Boolean&gt; handledMap = new HashMap&lt;&gt;();
+ 
+    public MyAccessibilityService() {
+    }
+ 
+    @Override
+    public void onAccessibilityEvent(AccessibilityEvent event) {
+        AccessibilityNodeInfo nodeInfo = event.getSource();
+        if (nodeInfo != null) {
+            int eventType = event.getEventType();
+            if (eventType== AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED ||
+                    eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+                if (handledMap.get(event.getWindowId()) == null) {
+                    boolean handled = iterateNodesAndHandle(nodeInfo);
+                    if (handled) {
+                        handledMap.put(event.getWindowId(), true);
+                    }
+                }
+            }
+        }
+    }
+ 
+    private boolean iterateNodesAndHandle(AccessibilityNodeInfo nodeInfo) {
+        if (nodeInfo != null) {
+            int childCount = nodeInfo.getChildCount();
+            if (&quot;android.widget.Button&quot;.equals(nodeInfo.getClassName())) {
+                String nodeContent = nodeInfo.getText().toString();
+                Log.d(&quot;TAG&quot;, &quot;content is &quot; + nodeContent);
+                if (&quot;安装&quot;.equals(nodeContent)
+                        || &quot;完成&quot;.equals(nodeContent)
+                        || &quot;确定&quot;.equals(nodeContent)) {
+                    nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                    return true;
+                }
+            } else if (&quot;android.widget.ScrollView&quot;.equals(nodeInfo.getClassName())) {
+                nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+            }
+            for (int i = 0; i &lt; childCount; i++) {
+                AccessibilityNodeInfo childNodeInfo = nodeInfo.getChild(i);
+                if (iterateNodesAndHandle(childNodeInfo)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+ 
+    @Override
+    public void onInterrupt() {
+    }
+ 
+}
+</code></pre>
+
+<p>代码并不复杂，我们来解析一下。每当窗口有活动时，就会有消息回调到 onAccessibilityEvent() 方法中，因此所有的逻辑都是从这里开始的。首先我们可以通过传入的 AccessibilityEvent 参数来获取当前事件的类型，事件的种类非常多，但是我们只需要监听 TYPE_WINDOW_CONTENT_CHANGED 和 TYPE_WINDOW_STATE_CHANGED 这两种事件就可以了，因为在整个安装过程中，这两个事件必定有一个会被触发。当然也有两个同时都被触发的可能，那么为了防止二次处理的情况，这里我们使用了一个 Map 来过滤掉重复事件。</p>
+
+<p>接下来就是调用 iterateNodesAndHandle()方法来去解析当前界面的节点了，这里我们通过递归的方式将安装界面中所有的子节点全部进行遍历，当发现按钮节点的时候就进行判断，按钮上的文字是不是 “安装”、“完成”、“确定” 这几种类型，如果是的话就模拟一下点击事件，这样也就相当于帮用户自动操作了这些按钮。另外从 Android 4.4 系统开始，用户需要将应用申请的所有权限看完才可以点击安装，因此如果我们在节点中发现了 ScrollView，那就模拟一下滑动事件，将界面滑动到最底部，这样安装按钮就可以点击了。</p>
+
+<p>最后，回到 MainActivity 中，来增加对智能安装功能的调用，如下所示：</p>
+
+<pre><code class="language-java">/**
+ * 仿360手机助手秒装和智能安装功能的主Activity。
+ * 原文地址：http://blog.csdn.net/guolin_blog/article/details/47803149
+ * @author guolin
+ * @since 2015/12/7
+ */
+public class MainActivity extends AppCompatActivity {
+ 
+    ......
+ 
+    public void onForwardToAccessibility(View view) {
+        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+        startActivity(intent);
+    }
+ 
+    public void onSmartInstall(View view) {
+        if (TextUtils.isEmpty(apkPath)) {
+            Toast.makeText(this, &quot;请选择安装包！&quot;, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Uri uri = Uri.fromFile(new File(apkPath));
+        Intent localIntent = new Intent(Intent.ACTION_VIEW);
+        localIntent.setDataAndType(uri, &quot;application/vnd.android.package-archive&quot;);
+        startActivity(localIntent);
+    }
+ 
+}
+</code></pre>
+
+<p>当点击了开启智能安装服务按钮时，我们通过 Intent 跳转到系统的无障碍服务界面，在这里启动智能安装服务。当点击了智能安装按钮时，我们通过 Intent 跳转到系统的安装界面，之后所有的安装操作都会自动完成了。</p>
+
+<p>现在可以重新运行一下程序，效果如下图所示：</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/api888/PublicPic@main//img/5c5b9bc26c064773841caaa9f6956a94_tplv-k3u1fbpfcp-zoom-1.gif" alt=""/></p>
+
+<p>可以看到，当打开网易新闻的安装界面之后，我们不需要进行任何的手动操作，界面的滑动、安装按钮、完成按钮的点击都是自动完成的，最终会自动回到手机原来的界面状态，这就是仿照 360 手机助手实现的智能安装功能。</p>
+
+<p>好的，本篇文章的所有内容就到这里了，虽说不能说完全实现静默安装，但是我们已经在权限允许的范围内尽可能地去完成了，并且 360 手机助手也只能实现到这一步而已，那些被产品经理逼着去实现静默安装的程序员们也有理由交差了吧？</p>
+
+
+</div>
+
+<br /><br />
+<hr />
+
+<div class="content-nav">
+    <div class="large-6 columns">
+        <div class="text-left" style="padding:15px 0px;">
+            
+            <a href="16251021954820.html" title="Previous Post: DialogFragment内存泄露问题能不能一次性改好">&laquo; DialogFragment内存泄露问题能不能一次性改好</a> 
+        </div>
+    </div>
+    <div class="large-6 columns">
+        <div class="text-right" style="padding:15px 0px;">
+            
+            <a href="16251021954737.html" title="Next Post: Android 添加水印功能">Android 添加水印功能 &raquo;</a> 
+        </div>
+    </div>
+</div>
+
+<div class="content_share">
+    <div style="padding:0px 0.93em;" class="share-comments">
+        
+    </div>
+</div>
+<script type="text/javascript">
+    $(function() {
+        var currentURL = '16251021954779.html';
+        $('#side-nav a').each(function() {
+            if ($(this).attr('href') == currentURL) {
+                $(this).parent().addClass('active');
+            }
+        });
+    });
+</script>  </div>
+</div>
+
+
+<div class="page-bottom">
+    <div class="copyright">
+        <a href="mailto:888api@sina.com">郝彬彬</a> &copy; 
+    </div>
+    <div class="copyright text-right">
+        <a href="#main-content">TOP</a>
+    </div>
+</div>
+
+</div>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+    figure {
+        margin: 0.4em 0;
+        padding: 0;
+    }
+    
+    figcaption {
+        text-align: center;
+    }
+    /* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+    /**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+    
+    code[class*="language-"],
+    pre[class*="language-"] {
+        color: black;
+        background: none;
+        text-shadow: 0 1px white;
+        font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        text-align: left;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        line-height: 1.5;
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
+        -ms-hyphens: none;
+        hyphens: none;
+    }
+    
+    pre[class*="language-"]::-moz-selection,
+    pre[class*="language-"] ::-moz-selection,
+    code[class*="language-"]::-moz-selection,
+    code[class*="language-"] ::-moz-selection {
+        text-shadow: none;
+        background: #b3d4fc;
+    }
+    
+    pre[class*="language-"]::selection,
+    pre[class*="language-"] ::selection,
+    code[class*="language-"]::selection,
+    code[class*="language-"] ::selection {
+        text-shadow: none;
+        background: #b3d4fc;
+    }
+    
+    @media print {
+        code[class*="language-"],
+        pre[class*="language-"] {
+            text-shadow: none;
+        }
+    }
+    /* Code blocks */
+    
+    pre[class*="language-"] {
+        padding: 1em;
+        margin: .5em 0;
+        overflow: auto;
+    }
+    
+     :not(pre)>code[class*="language-"],
+    pre[class*="language-"] {
+        background: #F7F7F7;
+    }
+    /* Inline code */
+    
+     :not(pre)>code[class*="language-"] {
+        padding: .1em;
+        border-radius: .3em;
+        white-space: normal;
+    }
+    
+    .token.comment,
+    .token.prolog,
+    .token.doctype,
+    .token.cdata {
+        color: slategray;
+    }
+    
+    .token.punctuation {
+        color: #999;
+    }
+    
+    .namespace {
+        opacity: .7;
+    }
+    
+    .token.property,
+    .token.tag,
+    .token.boolean,
+    .token.number,
+    .token.constant,
+    .token.symbol,
+    .token.deleted {
+        color: #905;
+    }
+    
+    .token.selector,
+    .token.attr-name,
+    .token.string,
+    .token.char,
+    .token.builtin,
+    .token.inserted {
+        color: #690;
+    }
+    
+    .token.operator,
+    .token.entity,
+    .token.url,
+    .language-css .token.string,
+    .style .token.string {
+        color: #9a6e3a;
+        background: hsla(0, 0%, 100%, .5);
+    }
+    
+    .token.atrule,
+    .token.attr-value,
+    .token.keyword {
+        color: #07a;
+    }
+    
+    .token.function,
+    .token.class-name {
+        color: #DD4A68;
+    }
+    
+    .token.regex,
+    .token.important,
+    .token.variable {
+        color: #e90;
+    }
+    
+    .token.important,
+    .token.bold {
+        font-weight: bold;
+    }
+    
+    .token.italic {
+        font-style: italic;
+    }
+    
+    .token.entity {
+        cursor: help;
+    }
+    
+    pre[class*="language-"].line-numbers {
+        position: relative;
+        padding-left: 3.8em;
+        counter-reset: linenumber;
+    }
+    
+    pre[class*="language-"].line-numbers>code {
+        position: relative;
+        white-space: inherit;
+    }
+    
+    .line-numbers .line-numbers-rows {
+        position: absolute;
+        pointer-events: none;
+        top: 0;
+        font-size: 100%;
+        left: -3.8em;
+        width: 3em;
+        /* works for line-numbers below 1000 lines */
+        letter-spacing: -1px;
+        border-right: 1px solid #999;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    .line-numbers-rows>span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+    
+    .line-numbers-rows>span:before {
+        content: counter(linenumber);
+        color: #999;
+        display: block;
+        padding-right: 0.8em;
+        text-align: right;
+    }
+</style>
+
+<script src="asset/js/foundation.min.js"></script>
+<script src="asset/js/foundation/foundation.offcanvas.js"></script>
+<script>
+    $(document).foundation();
+</script>
+<script src="asset/js/watermark.js"></script>
+
+</body>
+
+</html>

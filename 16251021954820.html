@@ -1,0 +1,605 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        烂笔头
+    </title>
+    <meta name="description" content="">
+    <link href="atom.xml" rel="alternate" title="烂笔头" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+    <script src="asset/highlightjs/highlight.pack.js"></script>
+    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+
+</head>
+
+<body class="antialiased hide-extras"></body>
+
+<div class="inner-wrap">
+
+
+    <nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+        <div id="header">
+            <h1><a href="index.html">烂笔头</a></h1>
+        </div>
+
+    </nav>
+
+
+    <div class="row">
+        <div class="sidebar">
+            <ul id="side-nav" class="side-nav">
+
+                
+                <li class="side-title"><span>Android</span></li>
+                
+                <li><a title="DialogFragment内存泄露问题能不能一次性改好" href="16251021954820.html">DialogFragment内存泄露问题能不能一次性改好</a></li>
+                
+                <li><a title="Android静默安装实现方案，仿360手机助手秒装和智能安装功能" href="16251021954779.html">Android静默安装实现方案，仿360手机助手秒装和智能安装功能</a></li>
+                
+                <li><a title="Android 添加水印功能" href="16251021954737.html">Android 添加水印功能</a></li>
+                
+                <li><a title="Android 监听手电筒状态" href="16251021954689.html">Android 监听手电筒状态</a></li>
+                 
+                <li class="side-title"><span>Github</span></li>
+                
+                <li><a title="使用Github+jsdelivr构建你的免费图床" href="16251022060206.html">使用Github+jsdelivr构建你的免费图床</a></li>
+                 
+                <li class="side-title"><span>Glide</span></li>
+                
+                <li><a title="Glide源码修改-自定义磁盘缓存实现永久存储" href="16251022251608.html">Glide源码修改-自定义磁盘缓存实现永久存储</a></li>
+                
+                <li><a title="Android—Glide使用教程（一）" href="16251022251568.html">Android—Glide使用教程（一）</a></li>
+                
+                <li><a title="Android—Glide使用教程（三）" href="16251022251527.html">Android—Glide使用教程（三）</a></li>
+                
+                <li><a title="Android—Glide使用教程（二）" href="16251022251484.html">Android—Glide使用教程（二）</a></li>
+                 
+                <li class="side-title"><span>Gradle</span></li>
+                
+                <li><a title="sourceSets使用" href="16251022385733.html">sourceSets使用</a></li>
+                
+                <li><a title="脑洞大开，Gradle项目管理依赖的船新版本" href="16251022385689.html">脑洞大开，Gradle项目管理依赖的船新版本</a></li>
+                 
+                <li class="side-title"><span>Rxjava</span></li>
+                
+                <li><a title="RxJava2 只看这一篇文章就够了" href="16251022491138.html">RxJava2 只看这一篇文章就够了</a></li>
+                 
+            </ul>
+        </div>
+        <div class="columns"> <div id="main-content" class="markdown-body">
+    <h1>DialogFragment内存泄露问题能不能一次性改好</h1>
+
+    <ul>
+<li>
+<a href="#toc_0">孽缘</a>
+</li>
+<li>
+<a href="#toc_1">别人是怎么解决的</a>
+</li>
+<li>
+<a href="#toc_2">我不随流</a>
+</li>
+<li>
+<a href="#toc_3">思考</a>
+<ul>
+<li>
+<a href="#toc_4"></a>
+</li>
+<li>
+<a href="#toc_5"></a>
+</li>
+<li>
+<a href="#toc_6"></a>
+</li>
+<li>
+<a href="#toc_7"></a>
+</li>
+<li>
+<a href="#toc_8"></a>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h1 id="toc_0">孽缘</h1>
+
+<p>自DialogFragment在Android3.0之后作为一种特殊的Fragment引入，官方建议使用DialogFragment代替Dialog或者AllertDialog来实现弹框的功能，因为它可以更好的管理Dialog的生命周期以及可以更好复用。 然而建议虽好，实用须谨慎，在开发的过程中我们只要接入LeakCanary则经常会收到DialogFragment导致内存泄露的小鸟惊喜。</p>
+
+<p>对于为什么DialogFragment会引起内存泄漏，网上资料一大堆，而且分析得也比较详尽，这里就不再多说了。总结起来就是内部的Dialog持有了DialogFragment的引用，导致DialogFragment在该回收的时候无法回收。</p>
+
+<p>那么Dialog是如何持有了DialogFragment的引用的呢？主要就是DialogFragment中在<code>onActivityCreated</code>方法中调用了Dialog的<code>setOnDismissListener</code>和<code>setOnCancelListener</code>这两个方法，将DialogFragmen设置了进去导致的。</p>
+
+<h1 id="toc_1">别人是怎么解决的</h1>
+
+<ul>
+<li>将<code>setOnDismissListener</code>和<code>setOnCancelListener</code>设置为空</li>
+</ul>
+
+<p>既然是DialogFragment中在<code>onActivityCreated</code>方法中调用了Dialog的<code>setOnDismissListener</code>和<code>setOnCancelListener</code>这两个方法导致的，那么解决方法不是很简单么？ 我们继承DialogFragment，然后重写<code>onActivityCreated</code>方法，在super之后再次将<code>setOnDismissListener</code>和<code>setOnCancelListener</code>设置为空不就可以吗？ 这么简单的一个小问题还要劳烦我这个高级划水师出马，真是不让人省心啊！！！</p>
+
+<p>然而想法很美好，现实很残酷啊，在super.onActivityCreate()方法中默认已经调用了<code>mDialog.setOnCancelListener(this)</code>和<code>mDialog.setOnDismissListener(this)</code>。 此时获取的Message有可能是消息池中的某一条消息，而这条消息刚好被一个消息循环所持有不能释放的话，那么这个内存泄漏的问题依然无法解决，所以说这只是一个治标不治本的方法。</p>
+
+<ul>
+<li>建议第三方库一直发送空的消息，保持第三方库的消息循环消息队列一直不为空。</li>
+</ul>
+
+<p>LeakCanary提供了一种解决方案：建议第三方库一直发送空的消息，保持第三方库的消息循环消息队列一直不为空。这种方式只能是提前知道哪个第三方库创建了自己的消息循环， 才能向这个消息循环中发送空消息，这并不能覆盖到所有的第三方创建的消息循环。而且，不断的向一个阻塞线程中发消息，线程时刻处于运行状态，占用线程空间资源。因此，此方案对于客户端开发来说并不可行。</p>
+
+<ul>
+<li>重写DialogFragment</li>
+</ul>
+
+<p>直接拷贝DialogFragment代码至LeakDialogFragment类中，放弃实现<code>DialogInterface.OnCancelListener</code>和<code>DialogInterface.OnDismissListener</code>两个接口， 将这两个接口用静态内部类加弱引用的方式实现，然后将这个静态内部类设置到对应的内部Dialog当中去。</p>
+
+<p>这的确是一个治标又治本的方案，但是工程量略大，而且本来DialogFragment是有谷歌官方维护的，现在变成了由你维护，如果未来官方发现了DialogFragment中产生了bug，默默修复了，那么你复制出来的这个类如何更新同步更新呢？</p>
+
+<h1 id="toc_2">我不随流</h1>
+
+<p>其实一路过来无论是网上的资料还是LeakCanary都是告诉我们是说是DialogFragment发生了内存泄漏，但是罪魁祸首真的是DialogFragment吗？罪魁祸首是DialogFragment内部的Dialog啊，我们为什么一直揪着DialogFragment不放呢？ 为什么一直想着给DialogFragment治病呢？能不能给DialogFragment它内部的Dialog治治啊？</p>
+
+<p>通过查看DialogFragment的源码我们发现它内部的mDialog是通过<code>onCreateDialog</code>方法生成的，而且这个方法是开放的。那么我们能不能通过重写这个方法，返回一个不会对DialogFragment持有强引用的Dialog不就完事了吗？</p>
+
+<p>那么我们就重写一个Dialog名为NoLeakDialog：</p>
+
+<pre><code class="language-java">public class NoLeakDialog extends Dialog {
+
+    public NoLeakDialog(@NonNull Context context, int themeResId) {
+        super(context, themeResId);
+    }
+
+
+    @Override
+    public void setOnCancelListener(@Nullable OnCancelListener listener) {
+        // 空实现，不持有外部的引用
+    }
+
+    @Override
+    public void setOnShowListener(@Nullable OnShowListener listener) {
+        // 空实现，不持有外部的引用
+    }
+
+    @Override
+    public void setOnDismissListener(@Nullable OnDismissListener listener) {
+        // 空实现，不持有外部的引用
+    }
+
+    @Override
+    public void setCancelMessage(@Nullable Message msg) {
+        // 空实现，不持有外部的引用
+    }
+
+    @Override
+    public void setDismissMessage(@Nullable Message msg) {
+        // 空实现，不持有外部的引用
+    }
+
+}
+</code></pre>
+
+<p>然后在我们的继承的DialogFramment的<code>onCreateDialog</code>方法中返回我们的NoLeakDialog即可。</p>
+
+<p><strong>至此我自己内心不得不为我这个高级划水师惊人的隐藏bug能力叹服，赶紧泡一杯枸杞喝起来准备下一轮的划水。</strong></p>
+
+<p>几杯枸杞水下肚，正准备倒计时下班时，测试带着奸笑跑过来说你这个弹窗不对啊，我点击了空白处隐藏了弹窗，跳转到别的页面后再返回，这个弹窗又自己弹出来了。。。</p>
+
+<p>此时我怀着高级划水师应有的自信直接怼回去说肯定是你的操作方式有问题，一边私底下偷偷打开AS调试起来。。。。</p>
+
+<p>一顿操作猛如虎之后我们发现按返回键和点击空白区域返回键只是调用了Dialog的dismiss放，并没有调用DialogFragment的dismiss方法，因为点击空白区域或者返回键需要Dialog 回调DialogFragment才会调用DialogFragment的dismiss方法，但是我们在NoLeakDialog类中将这些监听器都变成了空实现，所以也就没有了回调。</p>
+
+<p>而在DialogFragment的onDismiss方法方法中我们看到了官方的注释：</p>
+
+<pre><code class="language-java">  @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        if (!mViewDestroyed) {
+            // Note: we need to use allowStateLoss, because the dialog
+            // dispatches this asynchronously so we can receive the call
+            // after the activity is paused.  Worst case, when the user comes
+            // back to the activity they see the dialog again.
+            dismissInternal(true, true);
+        }
+    }
+
+   注释已经很清楚地说明了DialogFragmen会再次弹出
+</code></pre>
+
+<p>对于这个问题，我们只要在我们NoLeakDialog中重写<code>dismiss</code>方法，将相关事件回调给DialogFragment，然后调用DialogFragment的<code>dismiss</code>或者<code>dismissAllowingStateLoss</code>方法即可。</p>
+
+<p>所以我们最终NoLeakDialog的代码应该这样：</p>
+
+<pre><code class="language-java">public class NoLeakDialog extends Dialog {
+
+    private WeakReference&lt;DialogFragment&gt; hostFragmentReference;
+
+    public void setHostFragmentReference(DialogFragment hostFragment) {
+        this.hostFragmentReference = new WeakReference&lt;&gt;(hostFragment);
+    }
+
+    public NoLeakDialog(@NonNull Context context, int themeResId) {
+        super(context, themeResId);
+    }
+
+
+    @Override
+    public void setOnCancelListener(@Nullable OnCancelListener listener) {
+        // 空实现，不持有外部的引用
+    }
+
+    @Override
+    public void setOnShowListener(@Nullable OnShowListener listener) {
+        // 空实现，不持有外部的引用
+    }
+
+    @Override
+    public void setOnDismissListener(@Nullable OnDismissListener listener) {
+         // 空实现，不持有外部的引用
+    }
+
+    @Override
+    public void setCancelMessage(@Nullable Message msg) {
+          // 空实现，不持有外部的引用
+    }
+
+    @Override
+    public void setDismissMessage(@Nullable Message msg) {
+         // 空实现，不持有外部的引用
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        if (null != hostFragmentReference &amp;&amp; null != hostFragmentReference.get()) {
+            hostFragmentReference.get().dismissAllowingStateLoss();
+        }
+    }
+}
+</code></pre>
+
+<h1 id="toc_3">思考</h1>
+
+<p>由于我们将setOnDismissListener变成空实现，导致了点击空白区域或者返回键后再次返回界面又弹窗的问题，那么我们将其他的监听器设置为空， 会不会导致其他的问题呢？如果导致了，我们有补救措施不？</p>
+
+<p>由此我们将众监听器都设置为空，那么如果我们真正的使用中需要用到这些键监听怎么办？</p>
+
+<hr/>
+
+<ul>
+<li>回复<br/>
+fragment_version = &quot;1.2.5&quot;  目前很久没有报过内存泄露了</li>
+</ul>
+
+<h2 id="toc_4"></h2>
+
+<ul>
+<li>回复<br/>
+用了 jetpack 的 dialogFragment 之后还没发现过内存泄漏</li>
+</ul>
+
+<h2 id="toc_5"></h2>
+
+<ul>
+<li><p><strong>年小个大</strong> 回复<br/>
+现在好像已经没有这个bug了。你需要更新一下你的fragment依赖版本了。<br/>
+你这样做有个后果。还是会造成内存泄漏，导致fragment无法销毁，dialogFragment监听取消和关闭事件，其实就是为了销毁自己本身。这样做会使Fragmnet自己无法执行onDestroyView方法，当你的activity onResume的时候，这个DialogFragment会再次Show，这个问题当时我排查了很久，一开始也是用的你这种方式，但是我看了，新版的源码之后，发现不能这么做。在OnDismiss的时候，fragment内部就已经将listener赋值为NUll了所以。。。。不需要这么做了。</p>
+<ul>
+<li><strong>年小个大</strong> 回复
+其实有个办法是包装一下dismiss()方法，让它去执行dismissAllowingStateLoss()</li>
+<li><strong>年小个大</strong> 回复
+你可以尝试点击Dialog之外的区域让dialog自己关闭，看一下内存泄漏是否还有</li>
+<li><strong>zhaobozhen</strong> 回复
+&quot;当你的activity onResume的时候，这个DialogFragment会再次Show&quot;，这个问题也困扰我好久了，试了许多办法也不能解决。看了一下 DialogFragment 源码，在 onStart() 里会调用 Dialog#show 方法。这样会导致切后台回来后 dialog 的动画又被播放一遍……
+<ul>
+<li><strong>年小个大</strong> 回复 <strong>zhaobozhen</strong>: 原因就是fragment没有被销毁，没有执行onDestoryView。回来的时候又走了一边生命周期。</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h2 id="toc_6"></h2>
+
+<ul>
+<li><strong>曉之朱雀</strong> 回复
+一直使用Dialog
+<ul>
+<li><strong>作者</strong> 回复:DialogFragment可以结合lifecycle做很多事情</li>
+</ul></li>
+</ul>
+
+<h2 id="toc_7"></h2>
+
+<ul>
+<li><strong>想回北方漂的客户端</strong> 回复
+你好，我看了下“Message有可能是消息池中的某一条消息，而这条消息刚好被一个消息循环所持有不能释放的话”相关文章的解析，应该是这Looper中next方法中这段代码导致的，由于queue.next（）发生阻塞导致msg一直引用上一次放入对象池中的message对象：Message msg = queue.next(); // might block<br/>
+但是我有一个疑问：当DialogFragment需要关闭的时候，会通过内部Dialog发送message通知DialogFragment的ondismiss方法执行，这个时候queue.next方法不就不会发生阻塞了吗，msg局部变量也将被赋值为新的message，msg也就不会再持有上一次放入对象池中message对象了，内存泄漏不也不会发生了吗？</li>
+</ul>
+
+<h2 id="toc_8"></h2>
+
+<ul>
+<li><strong>执着的勺子</strong> 回复:
+我找不到问题所在,所以创建的dialogfragmen用弱引用包装一下,就没有内存泄漏了</li>
+</ul>
+
+
+</div>
+
+<br /><br />
+<hr />
+
+<div class="content-nav">
+    <div class="large-6 columns">
+        <div class="text-left" style="padding:15px 0px;">
+            
+            <a href="16251022060206.html" title="Previous Post: 使用Github+jsdelivr构建你的免费图床">&laquo; 使用Github+jsdelivr构建你的免费图床</a> 
+        </div>
+    </div>
+    <div class="large-6 columns">
+        <div class="text-right" style="padding:15px 0px;">
+            
+            <a href="16251021954779.html" title="Next Post: Android静默安装实现方案，仿360手机助手秒装和智能安装功能">Android静默安装实现方案，仿360手机助手秒装和智能安装功能 &raquo;</a> 
+        </div>
+    </div>
+</div>
+
+<div class="content_share">
+    <div style="padding:0px 0.93em;" class="share-comments">
+        
+    </div>
+</div>
+<script type="text/javascript">
+    $(function() {
+        var currentURL = '16251021954820.html';
+        $('#side-nav a').each(function() {
+            if ($(this).attr('href') == currentURL) {
+                $(this).parent().addClass('active');
+            }
+        });
+    });
+</script>  </div>
+</div>
+
+
+<div class="page-bottom">
+    <div class="copyright">
+        <a href="mailto:888api@sina.com">郝彬彬</a> &copy; 
+    </div>
+    <div class="copyright text-right">
+        <a href="#main-content">TOP</a>
+    </div>
+</div>
+
+</div>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+    figure {
+        margin: 0.4em 0;
+        padding: 0;
+    }
+    
+    figcaption {
+        text-align: center;
+    }
+    /* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+    /**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+    
+    code[class*="language-"],
+    pre[class*="language-"] {
+        color: black;
+        background: none;
+        text-shadow: 0 1px white;
+        font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        text-align: left;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        line-height: 1.5;
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
+        -ms-hyphens: none;
+        hyphens: none;
+    }
+    
+    pre[class*="language-"]::-moz-selection,
+    pre[class*="language-"] ::-moz-selection,
+    code[class*="language-"]::-moz-selection,
+    code[class*="language-"] ::-moz-selection {
+        text-shadow: none;
+        background: #b3d4fc;
+    }
+    
+    pre[class*="language-"]::selection,
+    pre[class*="language-"] ::selection,
+    code[class*="language-"]::selection,
+    code[class*="language-"] ::selection {
+        text-shadow: none;
+        background: #b3d4fc;
+    }
+    
+    @media print {
+        code[class*="language-"],
+        pre[class*="language-"] {
+            text-shadow: none;
+        }
+    }
+    /* Code blocks */
+    
+    pre[class*="language-"] {
+        padding: 1em;
+        margin: .5em 0;
+        overflow: auto;
+    }
+    
+     :not(pre)>code[class*="language-"],
+    pre[class*="language-"] {
+        background: #F7F7F7;
+    }
+    /* Inline code */
+    
+     :not(pre)>code[class*="language-"] {
+        padding: .1em;
+        border-radius: .3em;
+        white-space: normal;
+    }
+    
+    .token.comment,
+    .token.prolog,
+    .token.doctype,
+    .token.cdata {
+        color: slategray;
+    }
+    
+    .token.punctuation {
+        color: #999;
+    }
+    
+    .namespace {
+        opacity: .7;
+    }
+    
+    .token.property,
+    .token.tag,
+    .token.boolean,
+    .token.number,
+    .token.constant,
+    .token.symbol,
+    .token.deleted {
+        color: #905;
+    }
+    
+    .token.selector,
+    .token.attr-name,
+    .token.string,
+    .token.char,
+    .token.builtin,
+    .token.inserted {
+        color: #690;
+    }
+    
+    .token.operator,
+    .token.entity,
+    .token.url,
+    .language-css .token.string,
+    .style .token.string {
+        color: #9a6e3a;
+        background: hsla(0, 0%, 100%, .5);
+    }
+    
+    .token.atrule,
+    .token.attr-value,
+    .token.keyword {
+        color: #07a;
+    }
+    
+    .token.function,
+    .token.class-name {
+        color: #DD4A68;
+    }
+    
+    .token.regex,
+    .token.important,
+    .token.variable {
+        color: #e90;
+    }
+    
+    .token.important,
+    .token.bold {
+        font-weight: bold;
+    }
+    
+    .token.italic {
+        font-style: italic;
+    }
+    
+    .token.entity {
+        cursor: help;
+    }
+    
+    pre[class*="language-"].line-numbers {
+        position: relative;
+        padding-left: 3.8em;
+        counter-reset: linenumber;
+    }
+    
+    pre[class*="language-"].line-numbers>code {
+        position: relative;
+        white-space: inherit;
+    }
+    
+    .line-numbers .line-numbers-rows {
+        position: absolute;
+        pointer-events: none;
+        top: 0;
+        font-size: 100%;
+        left: -3.8em;
+        width: 3em;
+        /* works for line-numbers below 1000 lines */
+        letter-spacing: -1px;
+        border-right: 1px solid #999;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    .line-numbers-rows>span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+    
+    .line-numbers-rows>span:before {
+        content: counter(linenumber);
+        color: #999;
+        display: block;
+        padding-right: 0.8em;
+        text-align: right;
+    }
+</style>
+
+<script src="asset/js/foundation.min.js"></script>
+<script src="asset/js/foundation/foundation.offcanvas.js"></script>
+<script>
+    $(document).foundation();
+</script>
+<script src="asset/js/watermark.js"></script>
+
+</body>
+
+</html>
