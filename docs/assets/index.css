@@ -1,0 +1,17 @@
+/* 搜索清空按钮局中 */
+.sidebar .search .clear-button.show {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 表格分割线 */
+.markdown-section th,.markdown-section td {
+  border: 1px solid #717171;
+}
+
+/* 代码阴影 */
+.markdown-section pre[data-lang] {
+  box-shadow: rgba(0, 0, 0, 0.67) 0px 20px 68px;
+  border: 1px solid #10010136;
+}
