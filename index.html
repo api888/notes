@@ -1,422 +1,71 @@
-<!doctype html>
-<html class="no-js" lang="en">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>烂笔头</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="Description" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+    <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/themes/vue.css" /> -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/dark.css" />
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-        烂笔头
-    </title>
-    <meta name="description" content="">
-    <link href="atom.xml" rel="alternate" title="烂笔头" type="application/atom+xml">
-    <link rel="stylesheet" href="asset/css/foundation.min.css" />
-    <link rel="stylesheet" href="asset/css/docs.css" />
-
-    <script src="asset/js/vendor/modernizr.js"></script>
-    <script src="asset/js/vendor/jquery.js"></script>
-    <script src="asset/highlightjs/highlight.pack.js"></script>
-    <link href="asset/highlightjs/styles/github.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./_themes/index.css" />
+    <link rel="stylesheet" href="./_plugins/mermaid.css" />
+  </head>
+  <body>
+    <div id="app">🏃💨💨💨</div>
+    <script src="./_plugins/mermaid.js"></script>
     <script>
-        hljs.initHighlightingOnLoad();
+      // mermaid插件
+      let num = 0;
+      mermaid.initialize({ startOnLoad: false });
+
+      window.$docsify = {
+        name: '烂笔头',
+        repo: '',
+        loadSidebar: true,
+        coverpage: true,
+        maxLevel: 6,
+        subMaxLevel: 4,
+        mergeNavbar: true,
+        notFoundPage: '/_404.md',
+        search: {
+          placeholder: '搜索',
+          // 支持本地化
+          placeholder: {
+            '/zh-cn/': '搜索',
+            '/': '搜索', // 英文搜索
+          },
+          noData: '找不到结果',
+          hideOtherSidebarContent: true,
+        },
+        markdown: {
+          renderer: {
+            code: function (code, lang) {
+              // 支持mermaid
+              if (lang === 'mermaid') {
+                return (
+                  '<div class="mermaid">' + mermaid.render('mermaid-svg-' + num++, code) + '</div>'
+                );
+              }
+              // 支持dot
+              if (lang === 'dot') {
+                return '<div class="viz">' + Viz(code, 'SVG') + '</div>';
+              }
+              return this.origin.code.apply(this, arguments);
+            },
+          },
+        },
+      };
     </script>
-
-</head>
-
-<body class="antialiased hide-extras"></body>
-
-<div class="inner-wrap">
-
-
-    <nav class="top-bar docs-bar hide-for-small" data-topbar>
-
-        <div id="header">
-            <h1><a href="index.html">烂笔头</a></h1>
-        </div>
-
-    </nav>
-
-
-    <div class="row">
-        <div class="sidebar">
-            <ul id="side-nav" class="side-nav">
-
-                
-                <li class="side-title"><span>Android</span></li>
-                
-                <li><a title="移除第三方SDK所声明的权限" href="16280619241100.html">移除第三方SDK所声明的权限</a></li>
-                
-                <li><a title="Android登录页面，未勾选用户协议、隐私政策出现抖动效果" href="16280609822586.html">Android登录页面，未勾选用户协议、隐私政策出现抖动效果</a></li>
-                
-                <li><a title="DialogFragment内存泄露问题能不能一次性改好" href="16251021954820.html">DialogFragment内存泄露问题能不能一次性改好</a></li>
-                
-                <li><a title="Android静默安装实现方案，仿360手机助手秒装和智能安装功能" href="16251021954779.html">Android静默安装实现方案，仿360手机助手秒装和智能安装功能</a></li>
-                
-                <li><a title="Android 添加水印功能" href="16251021954737.html">Android 添加水印功能</a></li>
-                
-                <li><a title="Android 监听手电筒状态" href="16251021954689.html">Android 监听手电筒状态</a></li>
-                 
-                <li class="side-title"><span>Github</span></li>
-                
-                <li><a title="使用Github+jsdelivr构建你的免费图床" href="16251022060206.html">使用Github+jsdelivr构建你的免费图床</a></li>
-                 
-                <li class="side-title"><span>Glide</span></li>
-                
-                <li><a title="Glide源码修改-自定义磁盘缓存实现永久存储" href="16251022251608.html">Glide源码修改-自定义磁盘缓存实现永久存储</a></li>
-                
-                <li><a title="Android—Glide使用教程（一）" href="16251022251568.html">Android—Glide使用教程（一）</a></li>
-                
-                <li><a title="Android—Glide使用教程（二）" href="16251022251484.html">Android—Glide使用教程（二）</a></li>
-                
-                <li><a title="Android—Glide使用教程（三）" href="16251022251527.html">Android—Glide使用教程（三）</a></li>
-                 
-                <li class="side-title"><span>Gradle</span></li>
-                
-                <li><a title="Gradle 自定义Plugin插件之上传APK到蒲公英" href="16280610391708.html">Gradle 自定义Plugin插件之上传APK到蒲公英</a></li>
-                
-                <li><a title="自定义Gradle Plugin，优雅的解决第三方Jar包中的bug" href="16280610391664.html">自定义Gradle Plugin，优雅的解决第三方Jar包中的bug</a></li>
-                
-                <li><a title="如何使用Android Studio开发Gradle插件" href="16280610391616.html">如何使用Android Studio开发Gradle插件</a></li>
-                
-                <li><a title="sourceSets使用" href="16251022385733.html">sourceSets使用</a></li>
-                
-                <li><a title="脑洞大开，Gradle项目管理依赖的船新版本" href="16251022385689.html">脑洞大开，Gradle项目管理依赖的船新版本</a></li>
-                 
-                <li class="side-title"><span>Rxjava</span></li>
-                
-                <li><a title="RxJava2 只看这一篇文章就够了" href="16251022491138.html">RxJava2 只看这一篇文章就够了</a></li>
-                 
-                <li class="side-title"><span>GreenDAO</span></li>
-                
-                <li><a title="GreenDao 3.3.0 基本使用与入门 （一）" href="16280610693006.html">GreenDao 3.3.0 基本使用与入门 （一）</a></li>
-                
-                <li><a title="GreenDao 3.3.0 多表关联使用（二）" href="16280610765764.html">GreenDao 3.3.0 多表关联使用（二）</a></li>
-                
-                <li><a title="GreenDao 3.3.0 增删改查的使用（三）" href="16280610843145.html">GreenDao 3.3.0 增删改查的使用（三）</a></li>
-                 
-                <li class="side-title"><span>组件化</span></li>
-                
-                <li><a title="组件化架构之解决Common组件中心化问题(api化方案)" href="16280609309201.html">组件化架构之解决Common组件中心化问题(api化方案)</a></li>
-                 
-            </ul>
-        </div>
-        <div class="columns"> 
-
-
-	
-		<div class="markdown-body">
-		<h1>移除第三方SDK所声明的权限</h1>
-
-		<blockquote>
-<p>背景:Android app没有使用相机,无需相机权限，但SDK中声明了相机权限，需要剔除该权限</p>
-</blockquote>
-
-<h1 id="toc_0">解决方案:</h1>
-
-<p><strong>使用tools:node=&quot;remove&quot;</strong></p>
-
-<pre><code class="language-markup">&lt;uses-permission android:name=&quot;android.permission.CAMERA&quot; tools:node=&quot;remove&quot;/&gt;
-</code></pre>
-
-
-		</div>
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
- 
-	
-
-  
-  </div>
-</div>
-
-
-<div class="page-bottom">
-    <div class="copyright">
-        <a href="mailto:888api@sina.com">郝彬彬</a> &copy; 
-    </div>
-    <div class="copyright text-right">
-        <a href="#main-content">TOP</a>
-    </div>
-</div>
-
-</div>
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<style type="text/css">
-    figure {
-        margin: 0.4em 0;
-        padding: 0;
-    }
-    
-    figcaption {
-        text-align: center;
-    }
-    /* PrismJS 1.14.0
- http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
-    /**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-    
-    code[class*="language-"],
-    pre[class*="language-"] {
-        color: black;
-        background: none;
-        text-shadow: 0 1px white;
-        font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-        text-align: left;
-        white-space: pre;
-        word-spacing: normal;
-        word-break: normal;
-        word-wrap: normal;
-        line-height: 1.5;
-        -moz-tab-size: 4;
-        -o-tab-size: 4;
-        tab-size: 4;
-        -webkit-hyphens: none;
-        -moz-hyphens: none;
-        -ms-hyphens: none;
-        hyphens: none;
-    }
-    
-    pre[class*="language-"]::-moz-selection,
-    pre[class*="language-"] ::-moz-selection,
-    code[class*="language-"]::-moz-selection,
-    code[class*="language-"] ::-moz-selection {
-        text-shadow: none;
-        background: #b3d4fc;
-    }
-    
-    pre[class*="language-"]::selection,
-    pre[class*="language-"] ::selection,
-    code[class*="language-"]::selection,
-    code[class*="language-"] ::selection {
-        text-shadow: none;
-        background: #b3d4fc;
-    }
-    
-    @media print {
-        code[class*="language-"],
-        pre[class*="language-"] {
-            text-shadow: none;
-        }
-    }
-    /* Code blocks */
-    
-    pre[class*="language-"] {
-        padding: 1em;
-        margin: .5em 0;
-        overflow: auto;
-    }
-    
-     :not(pre)>code[class*="language-"],
-    pre[class*="language-"] {
-        background: #F7F7F7;
-    }
-    /* Inline code */
-    
-     :not(pre)>code[class*="language-"] {
-        padding: .1em;
-        border-radius: .3em;
-        white-space: normal;
-    }
-    
-    .token.comment,
-    .token.prolog,
-    .token.doctype,
-    .token.cdata {
-        color: slategray;
-    }
-    
-    .token.punctuation {
-        color: #999;
-    }
-    
-    .namespace {
-        opacity: .7;
-    }
-    
-    .token.property,
-    .token.tag,
-    .token.boolean,
-    .token.number,
-    .token.constant,
-    .token.symbol,
-    .token.deleted {
-        color: #905;
-    }
-    
-    .token.selector,
-    .token.attr-name,
-    .token.string,
-    .token.char,
-    .token.builtin,
-    .token.inserted {
-        color: #690;
-    }
-    
-    .token.operator,
-    .token.entity,
-    .token.url,
-    .language-css .token.string,
-    .style .token.string {
-        color: #9a6e3a;
-        background: hsla(0, 0%, 100%, .5);
-    }
-    
-    .token.atrule,
-    .token.attr-value,
-    .token.keyword {
-        color: #07a;
-    }
-    
-    .token.function,
-    .token.class-name {
-        color: #DD4A68;
-    }
-    
-    .token.regex,
-    .token.important,
-    .token.variable {
-        color: #e90;
-    }
-    
-    .token.important,
-    .token.bold {
-        font-weight: bold;
-    }
-    
-    .token.italic {
-        font-style: italic;
-    }
-    
-    .token.entity {
-        cursor: help;
-    }
-    
-    pre[class*="language-"].line-numbers {
-        position: relative;
-        padding-left: 3.8em;
-        counter-reset: linenumber;
-    }
-    
-    pre[class*="language-"].line-numbers>code {
-        position: relative;
-        white-space: inherit;
-    }
-    
-    .line-numbers .line-numbers-rows {
-        position: absolute;
-        pointer-events: none;
-        top: 0;
-        font-size: 100%;
-        left: -3.8em;
-        width: 3em;
-        /* works for line-numbers below 1000 lines */
-        letter-spacing: -1px;
-        border-right: 1px solid #999;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
-    
-    .line-numbers-rows>span {
-        pointer-events: none;
-        display: block;
-        counter-increment: linenumber;
-    }
-    
-    .line-numbers-rows>span:before {
-        content: counter(linenumber);
-        color: #999;
-        display: block;
-        padding-right: 0.8em;
-        text-align: right;
-    }
-</style>
-
-<script src="asset/js/foundation.min.js"></script>
-<script src="asset/js/foundation/foundation.offcanvas.js"></script>
-<script>
-    $(document).foundation();
-</script>
-<script src="asset/js/watermark.js"></script>
-
-</body>
-
+    <!-- Docsify v4 -->
+    <script src="./_plugins/docsify.js"></script>
+    <script src="./_plugins/countable.js"></script>
+    <script src="./_plugins/search.js"></script>
+    <script src="./_prismjs/prism-java.js"></script>
+    <script src="./_prismjs/prism-kotlin.js"></script>
+    <script src="./_prismjs/prism-markdown.js"></script>
+    <script src="./_prismjs/prism-batch.js"></script>
+    <script src="./_plugins//viz1.8.0.js"></script>
+  </body>
 </html>
