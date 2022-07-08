@@ -28,9 +28,12 @@
         subMaxLevel: 4,
         mergeNavbar: true,
         notFoundPage: '/_404.md',
+        alias: {
+          '/.*/_sidebar.md': '/_sidebar.md',
+          '/.*/_navbar.md': '/_navbar.md',
+        },
         search: {
           placeholder: '搜索',
-          // 支持本地化
           placeholder: {
             '/zh-cn/': '搜索',
             '/': '搜索', // 英文搜索
@@ -41,7 +44,6 @@
         markdown: {
           renderer: {
             code: function (code, lang) {
-              // 支持mermaid
               if (lang === 'mermaid') {
                 return (
                   '<div class="mermaid">' + mermaid.render('mermaid-svg-' + num++, code) + '</div>'
@@ -59,7 +61,8 @@
     </script>
     <!-- Docsify v4 -->
     <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
-    <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+    <!-- <script src="//unpkg.com/docsify-count/dist/countable.js"></script> -->
+    <script src="./_plugins/countable.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
     <script src="//unpkg.com/prismjs/components/prism-java.js"></script>
     <script src="//unpkg.com/prismjs/components/prism-kotlin.js"></script>

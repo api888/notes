@@ -33,29 +33,29 @@
   border-top: 1px solid rgb(246, 246, 246);
   
 }
-.markdown-section h1 .anchor, .markdown-section h2 .anchor, .markdown-section h3 .anchor, .markdown-section h4 .anchor{
+.markdown-section h3 .anchor, .markdown-section h4 .anchor{
   padding-top: 6px;
   border-top: 2px solid rgb(33, 33, 34,0.8);
 }
-
-/* .markdown-section .anchor{
-  background-color: rgb(33, 33, 34);
-  border-bottom-right-radius: 100px;
-  color: rgb(255, 255, 255);
-  padding-right: 30px;
-  padding-left: 30px;
-  line-height: 40px;
-  font-size: 16px;
+/* 一二级标题增加背景 */
+.markdown-section h1 .anchor,.markdown-section h2 .anchor{
+    background-color: rgb(33, 33, 34);
+    border-bottom-right-radius: 100px;
+    color: rgb(255, 255, 255);
+    padding-right: 30px;
+    padding-left: 30px;
+    line-height: 40px;
+    font-size: 16px;
 }
-.anchor span {
+.markdown-section h1 .anchor span,.markdown-section h2 .anchor span  {
   color: rgb(255, 255, 255);
-} */
+}
 
 /* 表格奇数 */
 thead :nth-child(odd){
-  background-color: #f0f0f0;
+  background-color: #cecbcb;
 }
 /* 表格偶数 */
 .markdown-section tr:nth-child(2n) {
-  background-color: #f8f8f8;
+  background-color: #ebe8e8;
 }
