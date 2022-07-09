@@ -42,7 +42,7 @@ function watermark(t1,t2,t3){
                         mark_div.style.OTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
                        mark_div.style.transform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
                         mark_div.style.visibility = "";
-                       mark_div.style.position = "absolute";
+                       mark_div.style.position = "fixed";
                          mark_div.style.left = x + 'px';
                         mark_div.style.top = y + 'px';
                        mark_div.style.overflow = "hidden";
