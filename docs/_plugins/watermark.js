@@ -4,6 +4,7 @@ function watermark(t1,t2,t3){
                 var intervalWidth = 150;    //间隔宽度
                  var intervalheight = 150;   //间隔高度
                  var rowNumber = maxWidth / intervalWidth;    //横向个数
+   console.log("宽度",maxWidth,rowNumber);
                 var coumnNumber = maxHeight / intervalheight;   //纵向个数
                  
                  //默认设置
