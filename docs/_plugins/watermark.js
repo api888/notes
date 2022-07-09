@@ -1,6 +1,6 @@
 function watermark(t1,t2,t3){
-                 var maxWidth = document.documentElement.clientWidth;
-                 var maxHeight = document.documentElement.clientHeight;
+                 var maxWidth = document.body.clientWidth;
+                 var maxHeight = document.body.clientHeight;
                 var intervalWidth = 150;    //间隔宽度
                  var intervalheight = 150;   //间隔高度
                  var rowNumber = maxWidth / intervalWidth;    //横向个数
