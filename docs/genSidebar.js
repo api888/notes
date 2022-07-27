@@ -6,6 +6,7 @@ console.log('当前路径', curPath);
 function walkSync(currentDirPath, prefixBlank, callback) {
   var fs = require('fs'),
     path = require('path');
+  console.log('测试', fs.readdirSync(currentDirPath));
   //读取目录
   fs.readdirSync(currentDirPath).forEach(function (name) {
     var filePath = path.join(currentDirPath, name);
@@ -41,6 +42,7 @@ walkSync(curPath, '', function (filePath, stat) {
     //console.log("file:"+ path.basename(filePath).slice(1));
     var itemText = relativeFilePath.substr(1, relativeFilePath.length - 4);
     while (itemText.indexOf('/') > 0) {
+      console.log('----', itemText.indexOf('/'));
       itemText = itemText.substr(itemText.indexOf('/') + 1);
       sidebarTxt += '  ';
     }
