@@ -22,9 +22,9 @@ function walkSync(currentDirPath, prefixBlank, callback) {
     ) {
       sidebarTxt += prefixBlank;
       if (filePath.substr(0, filePath.lastIndexOf('/')) === curPath) {
-        sidebarTxt += '* ';
+        sidebarTxt += '* 𐄒 ';
       } else {
-        sidebarTxt += '* ⤷ ';
+        sidebarTxt += '* 𐄛 ';
       }
       sidebarTxt += path.basename(filePath) + '\n';
 
@@ -46,7 +46,10 @@ walkSync(curPath, '', function (filePath, stat) {
       itemText = itemText.substr(itemText.indexOf('/') + 1);
       sidebarTxt += '  ';
     }
-    sidebarTxt += '- [' + itemText + '](' + relativeFilePath + ')\n';
+    const reg = /^[0-9]+[_|-]/;
+    const reg1 = /[-]+/;
+    sidebarTxt +=
+      '- [𐄢 ' + itemText.replace(reg, '').replace(reg1, '_') + '](' + relativeFilePath + ')\n';
   }
   //console.log("file:"+ +path.extname(filePath));
 });
