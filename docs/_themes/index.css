@@ -47,6 +47,10 @@
     line-height: 40px;
     font-size: 16px;
 }
+
+.markdown-section h1 .anchor code,.markdown-section h2 .anchor code{
+  background-color: transparent;
+}
 .markdown-section h1 .anchor span,.markdown-section h2 .anchor span  {
   color: rgb(255, 255, 255);
 }
